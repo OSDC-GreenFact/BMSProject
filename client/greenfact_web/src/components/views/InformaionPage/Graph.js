@@ -47,7 +47,6 @@ function Graph({ maxValue, id }) {
 
     const draw = () => {
       setTime();
-      console.log(id, ":", requestRef.current);
       if (requestRef.current % 200 === 0) {
         const before =
           mockData.length >= 30 ? mockData.slice(1) : mockData.slice();

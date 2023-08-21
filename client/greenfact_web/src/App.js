@@ -1,6 +1,39 @@
 import InformationPage from "./components/views/InformaionPage/InformationPage";
 import MainImage from "./components/views/MainImage/MainImage";
+import { socket } from "./components/utils/socket";
+import React, { useState, useEffect } from "react";
+
 function App() {
+  const [isSocketConnected, setIsSocketConnected] = useState(socket.connected);
+  const [socketData, setSocketData] = useState([]);
+  const startMessage = () => {
+    socket.connect();
+    socket.emit("Start-Message", "start seing...");
+  };
+  useEffect(() => {
+    function onConnect() {
+      setIsSocketConnected(true);
+    }
+
+    function onDisconnect() {
+      setIsSocketConnected(false);
+    }
+
+    function onReturnMessage(data) {
+      console.log(data);
+    }
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("Return-Message", onReturnMessage);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("Return-Message", onReturnMessage);
+    };
+  }, []);
+
   const mockData = [
     {
       title: "Temperature",
@@ -45,6 +78,7 @@ function App() {
         </div>
         <div>
           <MainImage />
+          <button onClick={startMessage}>Connect</button>
         </div>
         <div
           style={{
