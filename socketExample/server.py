@@ -1,8 +1,11 @@
 import eventlet
 import socketio
 import json
-f = open("./row1.json")
-json_data = json.load(f)
+import random
+import os
+import time
+#f = open("./row1.json")
+#json_data = json.load(f)
 # print(json_data)
 
 sio = socketio.Server(cors_allowed_origins='*')
@@ -53,7 +56,37 @@ def connect(sid, environ):
 @sio.on("Start-Message")
 def startMessage(sid, data):
     print('message :', data)
-    sio.emit('Return-Message', json_data)
+    cnt = 0
+    temp = 40
+    soc = 50
+    while cnt < 100:
+        f = open("./yame_json.json","w")
+        state = 0
+        f.write("{")
+        f.write("temperature :")
+        f.write("{}".format(temp))
+        f.write(",")
+        f.write("Soc :")
+        f.write("{}".format(soc))
+        f.write(",")
+        f.write("another :")
+        if 40 <= temp <50 :
+            state = 1
+        elif temp >= 50:
+            state = 2
+        f.write("{}".format(state))
+        f.write("}")
+        time.sleep(1)
+        cnt += 1
+
+        soc += random.random()
+        temp += random.random()*3
+
+        f1 = open("./yame_json.json")
+        json_data = json.load(f1)
+        os.remove("./yame_json.json")
+        
+        sio.emit('Return-Message', json_data)
 
 @sio.event
 def disconnect(sid):
